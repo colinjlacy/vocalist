@@ -3,7 +3,6 @@ from unittest import mock
 from main import Listener
 import os
 import speech_recognition as sr
-from io import StringIO
 
 class ListenerTest(TestCase):
 
@@ -54,16 +53,13 @@ class ListenerTest(TestCase):
                 self.fail()
 
     def test_could_not_parse_text(self):
-        harvard = sr.AudioFile('harvard.wav')
+        rel_path = os.path.join(os.getcwd(), "audio-files/harvard.wav")
+        harvard = sr.AudioFile(rel_path)
         os.system = mock.MagicMock()
         l = Listener()
         with harvard as source:
             audio = l.recognizer.record(source)
-        l.recognizer.recognize_google = mock.MagicMock(return_value=audio)
-        l.recognizer.listen = mock.MagicMock()
-        l.recognizer.recognize_google.side_effect = sr.UnknownValueError("test")
-        with mock.patch('speech_recognition.Microphone.listen') as mocked_mic:
-            l.listen()
-        # with mock.patch('speech_recognition.Recognizer.recognize_sphinx', return_value=None, new_callable=None) as mocked_recognizer:
-        #     mocked_recognizer.side_effect = sr.UnknownValueError("test")
-            assert os.system.called
+        l.recognizer.listen = mock.MagicMock(return_value=audio)
+        l.transcribe = mock.Mock(side_effect=sr.UnknownValueError("test"))
+        l.listen()
+        assert os.system.called
