@@ -17,19 +17,31 @@ STRATEGY_LIST = ('sphinx', 'bing', 'google', 'google_cloud', 'houndify', 'ibm', 
 class Listener:
 
     def __init__(self, strategy="google", credentials=None):
-        self.AVAILABLE_STRATEGIES = STRATEGY_LIST
+        self.available_strategies = STRATEGY_LIST
         self.__set_strategy(strategy)
         self.credentials = credentials
-        self.mic = sr.Microphone()
+        try:
+            self.mic = sr.Microphone()
+        except AttributeError:
+            raise AttributeError("You'll need to install PyAudio first: https://people.csail.mit.edu/hubert/pyaudio/")
 
     def __set_strategy(self, chosen_strategy):
         self.recognizer = sr.Recognizer()
-        self.transcribe = self.recognizer.__getattribute__(STRATEGY_MAP[chosen_strategy])
+        try:
+            strategy = STRATEGY_MAP[chosen_strategy]
+            self.transcribe = self.recognizer.__getattribute__(strategy)
+        except KeyError:
+            raise KeyError("You'll need to select an available strategy: {}.  Note that the default is `google`."
+                            .format(self.available_strategies))
 
     def __activate(self):
-        with self.mic as source:
-            audio_input = self.recognizer.listen(source)
-        return audio_input
+        try:
+            assert self.mic is not None
+            with self.mic as source:
+                audio_input = self.recognizer.listen(source)
+            return audio_input
+        except AssertionError:
+            raise NameError("Could not find a suitable microphone.")
 
     def __parse(self, audio_input):
         try:
