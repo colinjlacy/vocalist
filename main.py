@@ -1,3 +1,7 @@
+import queue
+from concurrent import futures
+import threading
+
 import speech_recognition as sr
 import os
 
@@ -20,6 +24,7 @@ class Listener:
         self.available_strategies = STRATEGY_LIST
         self.__set_strategy(strategy)
         self.credentials = credentials
+        self.q = queue.Queue()
         try:
             self.mic = sr.Microphone()
         except AttributeError:
@@ -38,23 +43,18 @@ class Listener:
         try:
             assert self.mic is not None
             with self.mic as source:
-                audio_input = self.recognizer.listen(source)
-            return audio_input
+                self.q.put(self.recognizer.listen(source))
+            self.__activate()
         except AssertionError:
             raise NameError("Could not find a suitable microphone.")
 
-    def __parse(self, audio_input):
-        try:
-            return self.transcribe(audio_input)
-        except sr.UnknownValueError:
-            return None
-
-    def __print(self, speech_text):
-        try:
-            assert speech_text is not None
-            print(speech_text)
-        except AssertionError:
-            self.__notify_error("There was a problem", "Could not process your speech into text")
+    def __parse(self):
+        while True:
+            audio_input = self.q.get(True)
+            try:
+                print(self.transcribe(audio_input))
+            except sr.UnknownValueError:
+                self.__notify_error("There was a problem", "Could not process your speech into text")
 
     def __notify_error(self, title, err_text):
         os.system("""
@@ -62,9 +62,10 @@ class Listener:
         """.format(err_text, title))
 
     def listen(self):
-        audio = self.__activate()
-        text = self.__parse(audio)
-        self.__print(text)
+        t = threading.Thread(target=self.__parse)
+        t.start()
+        self.__activate()
+        t.join()
 
 
 if __name__ == '__main__':
