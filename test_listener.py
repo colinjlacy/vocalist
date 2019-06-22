@@ -1,3 +1,4 @@
+from threading import Timer
 from unittest import TestCase
 from unittest import mock
 from main import Listener
@@ -46,6 +47,7 @@ class ListenerTest(TestCase):
             l = Listener()
             try:
                 l.listen()
+                l.stop()
                 self.fail()
             except NameError as err:
                 self.assertEqual("Could not find a suitable microphone.", str(err))
@@ -61,5 +63,7 @@ class ListenerTest(TestCase):
             audio = l.recognizer.record(source)
         l.recognizer.listen = mock.MagicMock(return_value=audio)
         l.transcribe = mock.Mock(side_effect=sr.UnknownValueError("test"))
+        s = Timer(1.0, l.stop)
+        s.start()
         l.listen()
         assert os.system.called

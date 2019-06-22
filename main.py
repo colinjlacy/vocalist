@@ -23,6 +23,8 @@ class Listener:
         self.available_strategies = STRATEGY_LIST
         self.__set_strategy(strategy)
         self.credentials = credentials
+        self.run = False
+        self.parse_thread = threading.Thread(target=self.__parse)
         self.spoken_q = queue.Queue()
         try:
             self.mic = sr.Microphone()
@@ -45,12 +47,13 @@ class Listener:
             with self.mic as source:
                 sounds = self.recognizer.listen(source)
                 self.spoken_q.put(sounds)
-            self.__activate()
+            if self.run == True:
+                self.__activate()
         except AssertionError:
             raise NameError("Could not find a suitable microphone.")
 
     def __parse(self):
-        while True:
+        while self.run:
             audio_input = self.spoken_q.get(True)
             try:
                 speech_text = self.transcribe(audio_input)
@@ -64,10 +67,13 @@ class Listener:
         """.format(err_text, title))
 
     def listen(self):
-        t = threading.Thread(target=self.__parse)
-        t.start()
+        self.run = True
+        self.parse_thread.setDaemon(True)
+        self.parse_thread.start()
         self.__activate()
-        t.join()
+
+    def stop(self):
+        self.run = False
 
 
 if __name__ == '__main__':
