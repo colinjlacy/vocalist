@@ -38,8 +38,7 @@ class Listener:
             strategy = STRATEGY_MAP[chosen_strategy]
             self.transcribe = self.recognizer.__getattribute__(strategy)
         except KeyError:
-            raise KeyError("You'll need to select an available strategy: {}.  Note that the default is `google`."
-                            .format(self.available_strategies))
+            raise KeyError("You'll need to select an available strategy: {}.  Note that the default is `google`.".format(self.available_strategies))
 
     def __activate(self):
         try:
