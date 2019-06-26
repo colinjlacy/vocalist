@@ -1,3 +1,3 @@
 if __name__ == '__main__':
-    from . import app
+    from arbitrator.root import app
     app.cli()
