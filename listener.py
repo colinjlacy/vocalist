@@ -70,8 +70,7 @@ class Listener:
         parse_thread = threading.Thread(target=self.__parse)
         parse_thread.setDaemon(True)
         parse_thread.start()
-        active_thread = threading.Thread(target=self.__activate)
-        active_thread.start()
+        self.__activate()
 
     def stop(self):
         self.__run = False
