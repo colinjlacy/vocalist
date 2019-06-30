@@ -21,4 +21,4 @@ class Extractor:
     def __watch_q(self):
         while self.__run:
             text = self.__input_q.get(True)
-            print(text)
+            self.output_q.put(text)
