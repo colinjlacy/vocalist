@@ -55,7 +55,7 @@ class ListenerTest(TestCase):
                 self.fail()
 
     def test_could_not_parse_text(self):
-        rel_path = os.path.join(os.getcwd(), "audio-files/harvard.wav")
+        rel_path = os.path.join(os.getcwd(), "../../audio-files/harvard.wav")
         harvard = sr.AudioFile(rel_path)
         os.system = mock.MagicMock()
         l = Listener()
