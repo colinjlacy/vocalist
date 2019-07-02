@@ -1,9 +1,10 @@
 from threading import Timer
 from unittest import TestCase
 from unittest import mock
-from main import Listener
+from ..listener import Listener
 import os
 import speech_recognition as sr
+
 
 class ListenerTest(TestCase):
 
@@ -55,7 +56,7 @@ class ListenerTest(TestCase):
                 self.fail()
 
     def test_could_not_parse_text(self):
-        rel_path = os.path.join(os.getcwd(), "../../audio-files/harvard.wav")
+        rel_path = os.path.join(os.getcwd(), "audio-files/harvard.wav")
         harvard = sr.AudioFile(rel_path)
         os.system = mock.MagicMock()
         l = Listener()

@@ -1,5 +1,5 @@
-from source.listener import Listener
-from source.extractor import Extractor
+from vocalist.listener import Listener
+from vocalist.extractor import Extractor
 
 if __name__ == '__main__':
     listener = Listener()

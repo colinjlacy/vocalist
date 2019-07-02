@@ -1,2 +1,5 @@
+pip==19.0.3
 PyAudio==0.2.11
+pytest==4.3.0
 SpeechRecognition==3.8.1
+twine==1.13.0
