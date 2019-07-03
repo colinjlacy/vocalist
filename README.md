@@ -1,6 +1,6 @@
 # Vocalist
 
-[![travis status](https://travis-ci.org/colinjlacy/vocalist.svg?branch=master "Travisstatus")](https://travis-ci.org/colinjlacy/vocalist)
+[![travis status](https://travis-ci.com/colinjlacy/vocalist.svg?branch=master "Travisstatus")](https://travis-ci.com/colinjlacy/vocalist)
 
 This is a simple project still in very early development, meant to be used to parse speech into text.  In its current state, it only works on Mac, and only where a compatible version of [PortAudio](http://www.portaudio.com/) has been installed.
 
