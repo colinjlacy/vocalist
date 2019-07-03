@@ -8,6 +8,6 @@ install:
   - pip install -r requirements.txt
   - pip install -e .
 script:
-  - pytest
+  - pytest --cov=vocalist
 after_success:
   - coveralls
