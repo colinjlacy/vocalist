@@ -1,3 +1,4 @@
+import time
 from threading import Timer
 from unittest import TestCase
 from unittest import mock
@@ -15,13 +16,14 @@ class ListenerTest(TestCase):
         pass
 
     def test_successful_strategy_mapping(self):
-        try:
-            _ = Listener(strategy="sphinx")
-            assert True
-        except KeyError:
-            self.fail()
-        except Exception:
-            self.fail()
+        with mock.patch('speech_recognition.Microphone', return_value=object):
+            try:
+                _ = Listener(strategy="sphinx")
+                assert True
+            except KeyError:
+                self.fail()
+            except Exception:
+                self.fail()
 
     def test_erroneous_strategy_mapping(self):
         try:
@@ -56,15 +58,17 @@ class ListenerTest(TestCase):
                 self.fail()
 
     def test_could_not_parse_text(self):
-        rel_path = os.path.join(os.getcwd(), "audio-files/harvard.wav")
-        harvard = sr.AudioFile(rel_path)
-        os.system = mock.MagicMock()
-        l = Listener()
-        with harvard as source:
-            audio = l.recognizer.record(source)
-        l.recognizer.listen = mock.MagicMock(return_value=audio)
-        l.transcribe = mock.Mock(side_effect=sr.UnknownValueError("test"))
-        s = Timer(1.0, l.stop)
-        s.start()
-        l.listen()
-        assert os.system.called
+        with mock.patch('speech_recognition.Microphone') as mocked_mic:
+            mocked_mic.return_value.__enter__ = lambda x: time.sleep(.5)
+            rel_path = os.path.join(os.getcwd(), "audio-files/harvard.wav")
+            harvard = sr.AudioFile(rel_path)
+            os.system = mock.MagicMock()
+            l = Listener()
+            with harvard as source:
+                audio = l.recognizer.record(source)
+            l.recognizer.listen = mock.MagicMock(return_value=audio)
+            l.transcribe = mock.Mock(side_effect=sr.UnknownValueError("test"))
+            s = Timer(1.0, l.stop)
+            s.start()
+            l.listen()
+            assert os.system.called
