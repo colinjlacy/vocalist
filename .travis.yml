@@ -11,3 +11,4 @@ script:
   - pytest --cov=vocalist
 after_success:
   - coveralls
+  - cd ./docs && make github
