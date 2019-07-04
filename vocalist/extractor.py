@@ -1,24 +1,26 @@
 from queue import Queue
 from threading import Thread
+from code_domain_emissary.handlers import app as nlp
 
 
 class Extractor:
 
     def __init__(self, q):
-        self.__input_q = q
+        self._input_q = q
+        self._transcribe_thread = Thread(target=self._watch_q)
+        self._transcribe_thread.setDaemon(True)
+        self._run = False
         self.output_q = Queue()
-        self.__transcribe_thread = Thread(target=self.__watch_q)
-        self.__transcribe_thread.setDaemon(True)
-        self.__run = False
 
     def observe(self):
-        self.__run = True
-        self.__transcribe_thread.start()
+        self._run = True
+        self._transcribe_thread.start()
 
     def ignore(self):
-        self.__run = False
+        self._run = False
 
-    def __watch_q(self):
-        while self.__run:
-            text = self.__input_q.get(True)
+    def _watch_q(self):
+        while self._run:
+            text = self._input_q.get(True)
+            # send to NLP and respond with processed intents
             self.output_q.put(text)

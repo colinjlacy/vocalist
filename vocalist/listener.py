@@ -20,57 +20,57 @@ STRATEGY_LIST = ('sphinx', 'bing', 'google', 'google_cloud', 'houndify', 'ibm', 
 class Listener:
 
     def __init__(self, strategy="google", credentials=None):
-        self.__available_strategies = STRATEGY_LIST
-        self.__set_strategy(strategy)
-        self.__credentials = credentials
-        self.__run = False
-        self.__spoken_q = queue.Queue()
+        self._available_strategies = STRATEGY_LIST
+        self._set_strategy(strategy)
+        self._credentials = credentials
+        self._run = False
+        self._spoken_q = queue.Queue()
         self.output_q = queue.Queue()
         try:
             self.mic = sr.Microphone()
         except AttributeError:
             raise AttributeError("You'll need to install PyAudio first: https://people.csail.mit.edu/hubert/pyaudio/")
 
-    def __set_strategy(self, chosen_strategy):
+    def _set_strategy(self, chosen_strategy):
         self.recognizer = sr.Recognizer()
         self.recognizer.pause_threshold = 0.5
         try:
             strategy = STRATEGY_MAP[chosen_strategy]
             self.transcribe = self.recognizer.__getattribute__(strategy)
         except KeyError:
-            raise KeyError("You'll need to select an available strategy: {}.  Note that the default is `google`.".format(self.__available_strategies))
+            raise KeyError("You'll need to select an available strategy: {}.  Note that the default is `google`.".format(self._available_strategies))
 
-    def __activate(self):
+    def _activate(self):
         try:
             assert self.mic is not None
             with self.mic as source:
                 sounds = self.recognizer.listen(source)
-                self.__spoken_q.put(sounds)
-            while self.__run:
-                self.__activate()
+                self._spoken_q.put(sounds)
+            while self._run:
+                self._activate()
         except AssertionError:
             raise NameError("Could not find a suitable microphone.")
 
-    def __parse(self):
-        while self.__run:
-            audio_input = self.__spoken_q.get(True)
+    def _parse(self):
+        while self._run:
+            audio_input = self._spoken_q.get(True)
             try:
                 speech_text = self.transcribe(audio_input)
                 self.output_q.put(speech_text)
             except sr.UnknownValueError:
-                self.__notify_error("There was a problem", "Could not process your speech into text")
+                self._notify_error("There was a problem", "Could not process your speech into text")
 
-    def __notify_error(self, title, err_text):
+    def _notify_error(self, title, err_text):
         os.system("""
         osascript -e 'display notification "{}" with title "{}"'
         """.format(err_text, title))
 
     def listen(self):
-        self.__run = True
-        parse_thread = threading.Thread(target=self.__parse)
+        self._run = True
+        parse_thread = threading.Thread(target=self._parse)
         parse_thread.setDaemon(True)
         parse_thread.start()
-        self.__activate()
+        self._activate()
 
     def stop(self):
-        self.__run = False
+        self._run = False
