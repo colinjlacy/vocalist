@@ -5,4 +5,5 @@ PyAudio==0.2.11
 pytest==4.3.0
 pytest-cov==2.6.1
 SpeechRecognition==3.8.1
+sphinx==2.1.2
 twine==1.13.0
