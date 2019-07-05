@@ -1,9 +1,0 @@
-CodeDomainEmissary==0.0.1.dev0
-coveralls==1.6.0
-pip==19.0.3
-PyAudio==0.2.11
-pytest==4.3.0
-pytest-cov==2.6.1
-SpeechRecognition==3.8.1
-sphinx==2.1.2
-twine==1.13.0
