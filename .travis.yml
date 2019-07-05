@@ -10,6 +10,7 @@ install:
 script:
   - pytest --cov=vocalist
   - cd ./docs && make github
+  - touch _build/html/.nojekyll
 # Tell Travis CI to copy the documentation to the gh-pages branch of
 # your GitHub repository.
 deploy:
