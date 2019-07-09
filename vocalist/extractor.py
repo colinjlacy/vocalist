@@ -24,5 +24,5 @@ class Extractor:
             text = self._input_q.get(True)
             # send to NLP and respond with processed intents
             result = self.code_emissary.process(text)
-            # self.output_q.put(result)
-            print(result)
+            self.output_q.put(result)
+            # print(result)
