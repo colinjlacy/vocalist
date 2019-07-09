@@ -1,7 +1,6 @@
 from queue import Queue
 from threading import Thread
-from code_domain_emissary.handlers import app as nlp
-
+from code_domain_emissary.emissary import Emissary
 
 class Extractor:
 
@@ -10,6 +9,7 @@ class Extractor:
         self._transcribe_thread = Thread(target=self._watch_q)
         self._transcribe_thread.setDaemon(True)
         self._run = False
+        self.code_emissary = Emissary()
         self.output_q = Queue()
 
     def observe(self):
@@ -23,4 +23,6 @@ class Extractor:
         while self._run:
             text = self._input_q.get(True)
             # send to NLP and respond with processed intents
-            self.output_q.put(text)
+            result = self.code_emissary.process(text)
+            # self.output_q.put(result)
+            print(result)
