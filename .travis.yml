@@ -13,6 +13,7 @@ install:
 
 
 script:
+  - mindmeld num-parse
   - pytest --cov=vocalist
   - cd ./docs && make github
   - touch _build/html/.nojekyll
