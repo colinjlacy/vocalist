@@ -2,6 +2,7 @@ from queue import Queue
 from threading import Thread
 from code_domain_emissary.emissary import Emissary
 
+
 class Extractor:
 
     def __init__(self, q):
@@ -25,4 +26,3 @@ class Extractor:
             # send to NLP and respond with processed intents
             result = self.code_emissary.process(text)
             self.output_q.put(result)
-            # print(result)
